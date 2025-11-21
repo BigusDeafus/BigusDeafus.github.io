@@ -1,0 +1,167 @@
+
+body {
+    background-color: #0d1117; /* Tamsi mėlyna */
+    color: #e0e0e0;           /* Šviesus tekstas */
+    font-family: "Poppins", 'Times New Roman', Times, serif, sans-serif;
+}
+
+/* Sekcijų fonas */
+section {
+    padding: 60px 0;
+    background-color: #0d1117;
+}
+
+/* ----------------------------
+   HEADERS (h1–h6)
+-----------------------------*/
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    color: #90b4ff; /* Šaltas mėlynas akcentas */
+}
+
+h1 { font-size: 2.6rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.6rem; color: #b0c4ff; }
+h4 { font-size: 1.3rem; color: #c7d6ff; }
+h5, h6 { color: #dbe4ff; }
+
+/* Pastraipos */
+p {
+    color: #cfd6e0;
+    line-height: 1.7;
+}
+
+/* ----------------------------
+   BUTTONS
+-----------------------------*/
+
+button, .btn {
+    background-color: #1f6feb; /* Mėlynas akcentas */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+button:hover, .btn:hover {
+    background-color: #1158c7;
+    transform: scale(1.03);
+}
+
+button:active, .btn:active {
+    transform: scale(0.97);
+}
+
+/* ----------------------------
+   LINKS
+-----------------------------*/
+
+a {
+    color: #58a6ff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+a:hover {
+    color: #1f6feb;
+    text-decoration: underline;
+}
+
+/* ----------------------------
+   BLOCK DESIGN (div, containers)
+-----------------------------*/
+
+section .container,
+.resume-item,
+.skill-item,
+.portfolio-item,
+.service-item,
+.media-block {
+    background: #111827; /* Tamsesnis mėlynas */
+    padding: 25px;
+    border-radius: 12px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 25px;
+}
+
+/* ----------------------------
+   IMAGES
+-----------------------------*/
+
+.portfolio-item img {
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(88, 166, 255, 0.15);
+}
+
+/* ----------------------------
+   MEDIA (video, iframe, audio)
+-----------------------------*/
+
+video, iframe, audio {
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* =============================
+   NAVIGATION BAR (Glass Dark Blue)
+============================= */
+
+header, .navbar {
+    background: rgba(17, 24, 39, 0.7); /* skaidri tamsi mėlyna */
+    backdrop-filter: blur(12px);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.navbar a {
+    color: #d0d7e1 !important;
+    font-weight: 600;
+    transition: 0.25s;
+}
+
+.navbar a:hover,
+.navbar .active {
+    color: #58a6ff !important;
+    text-shadow: 0 0 6px rgba(88,166,255,0.6);
+}
+/* =============================
+   BACK TO TOP BUTTON
+============================= */
+
+.back-to-top {
+    background-color: #1f6feb;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+
+    box-shadow: 0 0 12px rgba(88,166,255,0.6);
+    transition: 0.25s;
+}
+
+.back-to-top:hover {
+    background-color: #1158c7;
+    box-shadow: 0 0 18px rgba(88,166,255,0.9);
+    transform: scale(1.1);
+}
+
+/* Geresnis kontrastas sekcijų pavadinimams */
+.section-title h2 {
+    color: #90b4ff;
+}
+
+/* Portfolio tekstas */
+.portfolio-item p {
+    color: #d8e0ec;
+}
+
+/* Label tekstai */
+label {
+    color: #cbd5e1;
+}
