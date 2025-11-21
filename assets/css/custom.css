@@ -165,3 +165,100 @@ header, .navbar {
 label {
     color: #cbd5e1;
 }
+
+/* === Nenumeruotas sąrašas === */
+.custom-ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.custom-ul li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 8px;
+  color: #dce7ff;
+  font-size: 18px;
+}
+
+/* Pseudo-elementas vietoje taško */
+.custom-ul li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #4da3ff;
+  font-size: 18px;
+}
+
+/* Įdėtas sąrašas */
+.nested-ul {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 6px;
+}
+
+.nested-ul li::before {
+  content: "→";
+  color: #78b3ff;
+  left: -20px;
+  position: absolute;
+}
+
+/* === Numeruotas sąrašas === */
+.custom-ol {
+  counter-reset: numberCounter;
+  padding-left: 0;
+  list-style: none;
+  margin-top: 20px;
+}
+
+.custom-ol li {
+  counter-increment: numberCounter;
+  margin-bottom: 10px;
+  padding-left: 35px;
+  font-size: 18px;
+  color: #dce7ff;
+  position: relative;
+}
+
+.custom-ol li::before {
+  content: counter(numberCounter) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: bold;
+  color: #4da3ff;
+  font-size: 20px;
+}
+
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-family: inherit;
+  text-align: center;
+}
+
+.services-table th {
+  background: #0d6efd;
+  color: white;
+  padding: 12px;
+  font-size: 18px;
+}
+
+.services-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Zebra efektas */
+.services-table tbody tr:nth-child(even) {
+  background: #07080a;
+}
+
+/* Hover efektas */
+.services-table tbody tr:hover {
+  background: #dbe4ff;
+  transform: scale(1.01);
+  transition: 0.2s;
+}
