@@ -262,3 +262,225 @@ label {
   transform: scale(1.01);
   transition: 0.2s;
 }
+
+/* Fade-in animacija */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Uždedam animaciją visoms sekcijoms */
+section {
+  animation: fadeIn 1.2s ease-out both;
+}
+
+/* Pulsuojančių ikonų animacija */
+@keyframes pulseIcon {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Uždėti pulsuojančioms ikonoms */
+.social-links a i {
+  animation: pulseIcon 1.6s infinite ease-in-out;
+}
+/* Preloader fonas */
+#preloader {
+  position: fixed;
+  inset: 0;
+  background: #0d1117; /* tamsiai mėlynas / juodas fonas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Sukantis apskritimas */
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #3b82f6;   /* mėlyna */
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Jei vartotojas nustatė reduce-motion,
+   išjungiame animacijas */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  #preloader .loader {
+    animation: none !important;
+  }
+}
+
+/* Animacinis gradientas Services sekcijai */
+#services {
+    position: relative;
+    background: linear-gradient(120deg, #0a1a3a, #532968, #138a91);
+    background-size: 300% 300%;
+    animation: servicesGradient 12s ease infinite;
+    color: white; /* kad aiškiai matytųsi tekstas */
+    padding: 60px 0;
+    border-radius: 12px;
+}
+
+/* Gradiento animacija */
+@keyframes servicesGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Bendras trikampių stilius */
+.floating-triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 45px solid #00ffb3; /* neon green */
+  opacity: 0.35;
+  z-index: 0;
+}
+
+/* TRIKAMPIS 1 – plaukioja aukštyn/žemyn */
+.floating-triangle.t1 {
+  top: 15%;
+  left: 10%;
+  animation: float1 6s infinite ease-in-out;
+}
+
+/* TRIKAMPIS 2 – sukaisi */
+.floating-triangle.t2 {
+  top: 65%;
+  right: 15%;
+  animation: spin1 12s infinite linear;
+}
+
+/* TRIKAMPIS 3 – pulsuoja/didėja */
+.floating-triangle.t3 {
+  bottom: 10%;
+  left: 35%;
+  animation: scale1 5s infinite ease-in-out;
+}
+
+/* TRIKAMPIS 4 – plaukioja į šonus */
+.floating-triangle.t4 {
+  top: 40%;
+  right: 40%;
+  animation: floatSide 7s infinite ease-in-out;
+}
+
+/* Animacijos */
+@keyframes float1 {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-25px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes spin1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scale1 {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+@keyframes floatSide {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(25px); }
+  100% { transform: translateX(0px); }
+}
+.about-section {
+  position: relative;
+  overflow: visible !important;
+}
+.about-section {
+  position: relative;
+  overflow: visible !important; /* labai svarbu */
+}
+
+/* Bendras trikampių stilius */
+.floating-triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 45px solid #00ffb3;
+  opacity: 0.4;
+  z-index: 2;
+}
+
+/* Trikampių pozicijos */
+.t1 { top: 10%; left: 5%; animation: float1 6s infinite ease-in-out; }
+.t2 { top: 60%; right: 10%; animation: spin1 12s infinite linear; }
+.t3 { bottom: 5%; left: 30%; animation: scale1 5s infinite ease-in-out; }
+.t4 { top: 40%; right: 40%; animation: floatSide 7s infinite ease-in-out; }
+
+.result-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.popup {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #4caf50;
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.popup.show {
+  opacity: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.input-error {
+  border: 2px solid #ff4d4d !important;
+  background: #3b1f1f;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
