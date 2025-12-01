@@ -444,3 +444,43 @@ section {
 .t2 { top: 60%; right: 10%; animation: spin1 12s infinite linear; }
 .t3 { bottom: 5%; left: 30%; animation: scale1 5s infinite ease-in-out; }
 .t4 { top: 40%; right: 40%; animation: floatSide 7s infinite ease-in-out; }
+
+.result-box {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.popup {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #4caf50;
+  padding: 15px 25px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.popup.show {
+  opacity: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.input-error {
+  border: 2px solid #ff4d4d !important;
+  background: #3b1f1f;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
