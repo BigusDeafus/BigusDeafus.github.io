@@ -1,258 +1,432 @@
-document.addEventListener("DOMContentLoaded", function () {
+// =====================
+// === MEMORY GAME ===
+// =====================
 
-    // FORM OBJECTS
-    const form = document.getElementById("contactForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const result = document.getElementById("formResult");
-    const popup = document.getElementById("popupMessage");
+// Global variables for memory game
+let board = document.getElementById("gameBoard");
+let movesSpan = document.getElementById("moves");
+let matchesSpan = document.getElementById("matches");
+let winMessage = document.getElementById("winMessage");
+let bestEasy = document.getElementById("best-easy");
+let bestHard = document.getElementById("best-hard");
+let timeSpan = document.getElementById("time");
+let startBtn = document.getElementById("startGame");
+let resetBtn = document.getElementById("resetGame");
+let easyBtn = document.getElementById("levelEasy");
+let hardBtn = document.getElementById("levelHard");
 
-    // INPUT FIELDS
-    const fields = {
-        first: document.getElementById("firstName"),
-        last: document.getElementById("lastName"),
-        email: document.getElementById("email"),
-        phone: document.getElementById("phone"),
-        address: document.getElementById("address"),
-        rating1: document.getElementById("rating1"),
-        rating2: document.getElementById("rating2"),
-        rating3: document.getElementById("rating3")
-    };
+let level = "easy";
+let moves = 0;
+let matches = 0;
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
+let timer = 0;
+let timerInterval = null;
 
-    // -------- VALIDATION RULES -------- //
+const fruitsEasy = ["🍎","🍌","🍇","🍒","🍓","🍉"];
+const fruitsHard = ["🍎","🍌","🍇","🍒","🍓","🍉","🥝","🍑","🍍","🍐","🍊","🍈"];
 
-    // Tik raidės
-    const onlyLetters = /^[A-Za-zÀ-ž\s]+$/;
+// Timer system
+function startTimer() {
+    timer = 0;
+    timeSpan.textContent = "0:00";
+    clearInterval(timerInterval);
+    
+    timerInterval = setInterval(() => {
+        timer++;
+        timeSpan.textContent = formatTime(timer);
+    }, 1000);
+}
 
-    // El. paštas
-    const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function stopTimer() {
+    clearInterval(timerInterval);
+}
 
-    // Telefono formatas: 370 + 8 skaitmenys
-    const phoneFormat = /^370\d{8}$/;
+function formatTime(sec) {
+    let m = Math.floor(sec / 60);
+    let s = sec % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
-
-    // -------- VALIDATION FUNCTION -------- //
-
-    function validateField(field) {
-        let value = field.value.trim();
-        let valid = true;
-
-        // Nustatom pradines spalvas
-        field.style.border = "";
-
-        // Tikriname pagal lauką
-        switch (field.id) {
-            case "firstName":
-            case "lastName":
-                if (!onlyLetters.test(value)) valid = false;
-                break;
-
-            case "email":
-                if (!emailFormat.test(value)) valid = false;
-                break;
-
-            case "address":
-                if (value.length < 3) valid = false;
-                break;
-
-            case "phone":
-                if (!phoneFormat.test(value)) valid = false;
-                break;
-        }
-
-        // Jeigu klaida
-        if (!valid) {
-            field.style.border = "2px solid red";
-        } else {
-            field.style.border = "2px solid green";
-        }
-
-        return valid;
-    }
-
-
-    // -------- PHONE REAL-TIME FORMATTING -------- //
-
-    fields.phone.addEventListener("input", function () {
-        let val = fields.phone.value.replace(/\D/g, ""); // remove non-digits
-
-        // Automatically add 370 if missing
-        if (!val.startsWith("370")) {
-            val = "370" + val;
-        }
-
-        // Limit length: 370 + 8 digits = 11 total
-        val = val.substring(0, 11);
-
-        fields.phone.value = val;
-
-        // Validate phone
-        validateField(fields.phone);
-        checkFormValidity();
+// Game initialization
+function startGame() {
+    winMessage.classList.add("hidden");
+    moves = 0;
+    matches = 0;
+    
+    movesSpan.textContent = moves;
+    matchesSpan.textContent = matches;
+    
+    startTimer();
+    
+    let fruits = level === "easy" ? fruitsEasy : fruitsHard;
+    let totalCards = level === "easy" ? 12 : 24;
+    
+    let selected = fruits.slice(0, totalCards / 2);
+    let cards = [...selected, ...selected].sort(() => Math.random() - 0.5);
+    
+    board.innerHTML = "";
+    board.className = level;
+    
+    cards.forEach(icon => {
+        let card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.icon = icon;
+        card.innerHTML = `
+            <div class="front"></div>
+            <div class="back">${icon}</div>
+        `;
+        card.addEventListener("click", () => flipCard(card));
+        board.appendChild(card);
     });
+    
+    updateBestScores();
+}
 
+// Card logic
+function flipCard(card) {
+    if (lockBoard || card === firstCard || card.classList.contains("flipped")) return;
+    
+    card.classList.add("flipped");
+    
+    if (!firstCard) {
+        firstCard = card;
+        return;
+    }
+    
+    secondCard = card;
+    moves++;
+    movesSpan.textContent = moves;
+    
+    checkMatch();
+}
 
-    // -------- REAL-TIME VALIDATION FOR ALL INPUTS -------- //
+function checkMatch() {
+    let match = firstCard.dataset.icon === secondCard.dataset.icon;
+    
+    if (match) {
+        matches++;
+        matchesSpan.textContent = matches;
+        
+        firstCard.removeEventListener("click", flipCard);
+        secondCard.removeEventListener("click", flipCard);
+        
+        resetPair();
+        
+        let totalNeeded = level === "easy" ? 6 : 12;
+        if (matches === totalNeeded) endGame();
+    } else {
+        lockBoard = true;
+        setTimeout(() => {
+            firstCard.classList.remove("flipped");
+            secondCard.classList.remove("flipped");
+            resetPair();
+        }, 1000);
+    }
+}
 
-    Object.values(fields).forEach(field => {
-        if (field.type !== "range" && field.id !== "phone") {
-            field.addEventListener("input", () => {
-                validateField(field);
-                checkFormValidity();
+function resetPair() {
+    firstCard = null;
+    secondCard = null;
+    lockBoard = false;
+}
+
+// End game
+function endGame() {
+    stopTimer();
+    winMessage.classList.remove("hidden");
+    
+    let bestKey = level === "easy" ? "bestEasy" : "bestHard";
+    let bestValue = localStorage.getItem(bestKey);
+    
+    if (!bestValue || moves < parseInt(bestValue)) {
+        localStorage.setItem(bestKey, moves);
+        updateBestScores();
+    }
+}
+
+// Best scores
+function updateBestScores() {
+    bestEasy.textContent = localStorage.getItem("bestEasy") || "-";
+    bestHard.textContent = localStorage.getItem("bestHard") || "-";
+}
+
+// =====================
+// === CONTACT FORM ===
+// =====================
+
+function validateContactForm() {
+    // Get form elements
+    const firstName = document.getElementById("firstName");
+    const lastName = document.getElementById("lastName");
+    const email = document.getElementById("email");
+    const phone = document.getElementById("phone");
+    
+    let isValid = true;
+    
+    // Clear previous errors
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    document.querySelectorAll('.input-valid').forEach(el => el.classList.remove('input-valid'));
+    
+    // Validate each field
+    if (!firstName.value.trim()) {
+        showError(firstName, "Vardas yra privalomas");
+        isValid = false;
+    } else {
+        showValid(firstName);
+    }
+    
+    if (!lastName.value.trim()) {
+        showError(lastName, "Pavardė yra privaloma");
+        isValid = false;
+    } else {
+        showValid(lastName);
+    }
+    
+    if (!email.value.trim()) {
+        showError(email, "El. paštas yra privalomas");
+        isValid = false;
+    } else if (!validateEmail(email.value)) {
+        showError(email, "Įveskite teisingą el. pašto adresą");
+        isValid = false;
+    } else {
+        showValid(email);
+    }
+    
+    if (!phone.value.trim()) {
+        showError(phone, "Telefono numeris yra privalomas");
+        isValid = false;
+    } else if (!validatePhone(phone.value)) {
+        showError(phone, "Įveskite teisingą telefono numerį");
+        isValid = false;
+    } else {
+        showValid(phone);
+    }
+    
+    return isValid;
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    const re = /^[\d\s\-+()]{8,15}$/;
+    return re.test(phone.replace(/\s/g, ''));
+}
+
+function showError(inputElement, message) {
+    inputElement.classList.add('input-error');
+    inputElement.classList.remove('input-valid');
+    
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    errorDiv.style.color = '#ff4d4d';
+    errorDiv.style.fontSize = '0.85rem';
+    errorDiv.style.marginTop = '5px';
+    
+    inputElement.parentNode.insertBefore(errorDiv, inputElement.nextSibling);
+}
+
+function showValid(inputElement) {
+    inputElement.classList.add('input-valid');
+    inputElement.classList.remove('input-error');
+}
+
+function showPopup(message) {
+    // Remove existing popup
+    const existingPopup = document.querySelector('.popup');
+    if (existingPopup) existingPopup.remove();
+    
+    // Create new popup
+    const popup = document.createElement('div');
+    popup.className = 'popup show';
+    popup.textContent = message;
+    popup.style.position = 'fixed';
+    popup.style.bottom = '30px';
+    popup.style.right = '30px';
+    popup.style.background = '#4caf50';
+    popup.style.color = 'white';
+    popup.style.padding = '15px 25px';
+    popup.style.borderRadius = '8px';
+    popup.style.zIndex = '1000';
+    popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+    
+    document.body.appendChild(popup);
+    
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+        popup.classList.remove('show');
+        setTimeout(() => popup.remove(), 400);
+    }, 5000);
+}
+
+function displayResult(data) {
+    let resultBox = document.querySelector('.result-box');
+    if (!resultBox) {
+        resultBox = document.createElement('div');
+        resultBox.className = 'result-box';
+        resultBox.style.marginTop = '20px';
+        resultBox.style.padding = '20px';
+        resultBox.style.borderRadius = '10px';
+        resultBox.style.background = '#111827';
+        resultBox.style.border = '1px solid rgba(144, 180, 255, 0.2)';
+        resultBox.style.color = '#fff';
+        
+        const form = document.getElementById('contactForm');
+        form.parentNode.insertBefore(resultBox, form.nextSibling);
+    }
+    
+    const averageRating = ((parseInt(data.rating1) + parseInt(data.rating2) + parseInt(data.rating3)) / 3).toFixed(1);
+    
+    const resultHtml = `
+        <h3 style="color: #90b4ff; margin-bottom: 15px; border-bottom: 2px solid rgba(144, 180, 255, 0.3); padding-bottom: 10px;">Jūsų pateikta informacija:</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <p><strong>Vardas:</strong> ${data.firstName}</p>
+                <p><strong>Pavardė:</strong> ${data.lastName}</p>
+                <p><strong>El. paštas:</strong> ${data.email}</p>
+                <p><strong>Telefonas:</strong> ${data.phone}</p>
+            </div>
+            <div>
+                <p><strong>Adresas:</strong> ${data.address || 'Nenurodytas'}</p>
+                <p><strong>Vertinimas 1:</strong> ${data.rating1}/10</p>
+                <p><strong>Vertinimas 2:</strong> ${data.rating2}/10</p>
+                <p><strong>Vertinimas 3:</strong> ${data.rating3}/10</p>
+                <p><strong>Vidutinis įvertinimas:</strong> <span style="color: #4CAF50; font-weight: bold;">${averageRating}/10</span></p>
+            </div>
+        </div>
+        <p style="color: #90b4ff; margin-top: 15px; font-style: italic;">Ačiū už Jūsų atsiliepimą!</p>
+    `;
+    
+    resultBox.innerHTML = resultHtml;
+    resultBox.style.display = 'block';
+}
+
+// =====================
+// === INITIALIZATION ===
+// =====================
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize memory game
+    updateBestScores();
+    
+    if (startBtn) {
+        startBtn.addEventListener("click", startGame);
+    }
+    
+    if (resetBtn) {
+        resetBtn.addEventListener("click", startGame);
+    }
+    
+    if (easyBtn && hardBtn) {
+        easyBtn.addEventListener("click", () => {
+            level = "easy";
+            easyBtn.classList.add("active");
+            hardBtn.classList.remove("active");
+            startGame();
+        });
+        
+        hardBtn.addEventListener("click", () => {
+            level = "hard";
+            hardBtn.classList.add("active");
+            easyBtn.classList.remove("active");
+            startGame();
+        });
+    }
+    
+    // Start the game initially
+    startGame();
+    
+    // Initialize contact form
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            if (!validateContactForm()) {
+                showPopup('❌ Prašome ištaisyti klaidas formoje');
+                return;
+            }
+            
+            // Collect form data
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address') ? document.getElementById('address').value : '',
+                rating1: document.getElementById('rating1').value,
+                rating2: document.getElementById('rating2').value,
+                rating3: document.getElementById('rating3').value
+            };
+            
+            // Display results
+            displayResult(formData);
+            
+            // Show success popup
+            const averageRating = ((parseInt(formData.rating1) + parseInt(formData.rating2) + parseInt(formData.rating3)) / 3).toFixed(1);
+            showPopup(`✅ Ačiū, ${formData.firstName}! Jūsų atsiliepimas gautas. Vidutinis įvertinimas: ${averageRating}/10`);
+        });
+    }
+    
+    // Real-time validation for inputs
+    const formInputs = document.querySelectorAll('#contactForm input');
+    formInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.id === 'email' && this.value) {
+                if (!validateEmail(this.value)) {
+                    showError(this, "Įveskite teisingą el. pašto adresą");
+                } else {
+                    showValid(this);
+                }
+            }
+            
+            if (this.id === 'phone' && this.value) {
+                if (!validatePhone(this.value)) {
+                    showError(this, "Įveskite teisingą telefono numerį");
+                } else {
+                    showValid(this);
+                }
+            }
+            
+            if ((this.id === 'firstName' || this.id === 'lastName') && this.value) {
+                if (this.value.length < 2) {
+                    showError(this, "Turi būti bent 2 simboliai");
+                } else {
+                    showValid(this);
+                }
+            }
+        });
+    });
+    
+    // Rating sliders value display
+    const ratings = ['rating1', 'rating2', 'rating3'];
+    ratings.forEach(ratingId => {
+        const slider = document.getElementById(ratingId);
+        if (slider) {
+            const display = document.createElement('span');
+            display.style.marginLeft = '10px';
+            display.style.color = '#90b4ff';
+            display.style.fontWeight = 'bold';
+            display.textContent = slider.value;
+            slider.parentNode.appendChild(display);
+            
+            slider.addEventListener('input', function() {
+                display.textContent = this.value;
             });
         }
     });
-
-    // Sliders also trigger button enabling
-    ["rating1", "rating2", "rating3"].forEach(r => {
-        fields[r].addEventListener("input", checkFormValidity);
-    });
-
-
-    // -------- CHECK IF FORM IS VALID -------- //
-
-    function checkFormValidity() {
-        const allValid =
-            validateField(fields.first) &&
-            validateField(fields.last) &&
-            validateField(fields.email) &&
-            validateField(fields.phone) &&
-            validateField(fields.address);
-
-        submitBtn.disabled = !allValid;
-        return allValid;
+    
+    // Preloader
+    const preloader = document.getElementById("preloader");
+    if (preloader) {
+        preloader.style.opacity = "0";
+        setTimeout(() => preloader.style.display = "none", 500);
     }
-
-    // Initially disable submit
-    submitBtn.disabled = true;
-
-
-    // -------- FORM SUBMIT -------- //
-
-    form.addEventListener("submit", function (e) {
-        e.preventDefault(); // STOP PAGE REFRESH
-
-        if (!checkFormValidity()) return;
-
-        // Compute rating average
-        const r1 = Number(fields.rating1.value);
-        const r2 = Number(fields.rating2.value);
-        const r3 = Number(fields.rating3.value);
-        const avg = ((r1 + r2 + r3) / 3).toFixed(1);
-
-        // Display results
-        result.innerHTML = `
-            <p><strong>Vardas:</strong> ${fields.first.value}</p>
-            <p><strong>Pavardė:</strong> ${fields.last.value}</p>
-            <p><strong>El.paštas:</strong> ${fields.email.value}</p>
-            <p><strong>Telefonas:</strong> ${fields.phone.value}</p>
-            <p><strong>Adresas:</strong> ${fields.address.value}</p>
-            <p><strong>Įvertinimų vidurkis:</strong> ${avg}</p>
-        `;
-
-        // POPUP animation
-        popup.classList.remove("hidden");
-        popup.classList.add("show");
-
-        setTimeout(() => {
-            popup.classList.remove("show");
-            popup.classList.add("hidden");
-        }, 2500);
-
-        console.log("Formos duomenys pateikti sėkmingai!");
-    });
-
 });
-
-// --- Duomenų rinkinys (paveiksliukai arba emoji) ---
-const icons = [
-  "🍎","🍌","🍇","🍒","🥝","🍋",
-  "🍓","🍑","🍍","🥭","🍈","🥥"
-];
-
-
-let board = [];
-let flippedCards = [];
-let matchedCount = 0;
-let moves = 0;
-
-// HTML elementai
-const boardEl = document.getElementById("gameBoard");
-const movesEl = document.getElementById("moves");
-const matchesEl = document.getElementById("matches");
-const winMessage = document.getElementById("winMessage");
-const difficulty = document.getElementById("difficulty");
-
-// Mygtukai
-document.getElementById("startGame").addEventListener("click", startGame);
-document.getElementById("resetGame").addEventListener("click", startGame);
-
-// Funkcija: pradėti / perkurti žaidimą
-function startGame() {
-  winMessage.classList.add("hidden");
-  moves = 0;
-  matchedCount = 0;
-  flippedCards = [];
-  movesEl.textContent = 0;
-  matchesEl.textContent = 0;
-
-  let pairs = difficulty.value === "easy" ? 6 : 12;
-  let grid = difficulty.value === "easy" ? "repeat(4, 1fr)" : "repeat(6, 1fr)";
-
-  boardEl.style.gridTemplateColumns = grid;
-
-  let selectedIcons = icons.slice(0, pairs);
-  board = [...selectedIcons, ...selectedIcons]
-    .sort(() => Math.random() - 0.5);
-
-  boardEl.innerHTML = "";
-
-  board.forEach((icon, index) => {
-    let card = document.createElement("div");
-    card.classList.add("card");
-    card.dataset.index = index;
-    card.dataset.value = icon;
-    card.textContent = icon;
-
-    card.addEventListener("click", flipCard);
-    boardEl.appendChild(card);
-  });
-}
-
-// Funkcija: apversti kortelę
-function flipCard() {
-  if (flippedCards.length === 2) return;
-
-  let card = this;
-  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
-
-  card.classList.add("flipped");
-  flippedCards.push(card);
-
-  if (flippedCards.length === 2) {
-    moves++;
-    movesEl.textContent = moves;
-
-    setTimeout(checkMatch, 600);
-  }
-}
-
-// Funkcija: tikrinti ar kortelės sutampa
-function checkMatch() {
-  let [c1, c2] = flippedCards;
-
-  if (c1.dataset.value === c2.dataset.value) {
-    c1.classList.add("matched");
-    c2.classList.add("matched");
-    matchedCount++;
-    matchesEl.textContent = matchedCount;
-  } else {
-    c1.classList.remove("flipped");
-    c2.classList.remove("flipped");
-  }
-
-  flippedCards = [];
-
-  if (matchedCount === board.length / 2) {
-    winMessage.classList.remove("hidden");
-  }
-}

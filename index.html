@@ -956,26 +956,32 @@
       <button type="submit" id="submitBtn">Pateikti</button>
 
     </form>
-    <section id="memory-game" class="memory-section">
+   <section id="memory-game" class="memory-section">
   <h2>Mano žaidimas</h2>
 
-  <!-- Sunkumo pasirinkimas -->
-  <label for="difficulty">Pasirinkite sudėtingumą:</label>
-  <select id="difficulty">
-    <option value="easy">Lengvas (4x3)</option>
-    <option value="hard">Sunkus (6x4)</option>
-  </select>
+  <!-- Lygio pasirinkimas -->
+  <div class="level-buttons">
+    <button id="levelEasy" class="level-btn active">Lengvas (4x3)</button>
+    <button id="levelHard" class="level-btn">Sunkus (6x4)</button>
+  </div>
 
   <!-- Mygtukai -->
   <div class="game-buttons">
-    <button id="startGame">Start</button>
-    <button id="resetGame">Atnaujinti</button>
+    <button id="startGame" class="btn">Start</button>
+    <button id="resetGame" class="btn">Atnaujinti</button>
   </div>
 
   <!-- Statistika -->
   <div class="stats">
     <p>Ėjimai: <span id="moves">0</span></p>
     <p>Sutapimai: <span id="matches">0</span></p>
+    <p>Laikas: <span id="time">0:00</span></p>
+  </div>
+
+  <!-- Geriausi rezultatai -->
+  <div class="stats-best">
+    <p>Geriausias (Lengvas): <span id="best-easy">-</span></p>
+    <p>Geriausias (Sunkus): <span id="best-hard">-</span></p>
   </div>
 
   <!-- Žaidimo lenta -->
@@ -984,12 +990,7 @@
   <!-- Laimėjimo pranešimas -->
   <div id="winMessage" class="win hidden">🎉 Laimėjote! 🎉</div>
 </section>
-    <!-- ČIA BUS ATVAIZDUOTI DUOMENYS -->
-    <div id="formResult" class="result-box"></div>
 
-    <!-- POPUP ŽINUTĖ -->
-    <div id="popupMessage" class="popup hidden">Duomenys pateikti sėkmingai!</div>
-  </div>
 </section><!-- /Contact Section -->
 
   </main>
