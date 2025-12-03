@@ -916,82 +916,83 @@
 
   </section><!-- /Testimonials Section -->
 
-    <!-- Contact Section -->
+        <!-- Contact Section -->
     <section id="contact" class="contact section">
- 
+
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Kontaktai</h2>
         <p>Susisiekite su manimi</p>
       </div><!-- End Section Title -->
-     <label>Adresas:</label>
-     <input type="text" id="address" required>
 
-     <div class="container">
-     <h2>Kontaktai</h2>
+      <div class="container">
+        <h2>Kontaktai</h2>
 
-     <form id="contactForm" class="php-email-form">
+        <form id="contactForm" class="php-email-form">
+          <label>Vardas:</label>
+          <input type="text" id="firstName" required>
 
-      <label>Vardas:</label>
-      <input type="text" id="firstName" required>
+          <label>Pavardė:</label>
+          <input type="text" id="lastName" required>
 
-      <label>Pavardė:</label>
-      <input type="text" id="lastName" required>
+          <label>El. paštas:</label>
+          <input type="email" id="email" required>
 
-      <label>El. paštas:</label>
-      <input type="email" id="email" required>
+          <label>Telefono numeris:</label>
+          <input type="tel" id="phone" required>
 
-      <label>Telefono numeris:</label>
-      <input type="tel" id="phone" required>
+          <label>Adresas:</label>
+          <input type="text" id="address">
 
-      <label>Vertinimas 1 (1–10):</label>
-      <input type="range" min="1" max="10" id="rating1" value="5">
+          <label>Vertinimas 1 (1–10):</label>
+          <input type="range" min="1" max="10" id="rating1" value="5">
 
-      <label>Vertinimas 2 (1–10):</label>
-      <input type="range" min="1" max="10" id="rating2" value="5">
+          <label>Vertinimas 2 (1–10):</label>
+          <input type="range" min="1" max="10" id="rating2" value="5">
 
-      <label>Vertinimas 3 (1–10):</label>
-      <input type="range" min="1" max="10" id="rating3" value="5">
+          <label>Vertinimas 3 (1–10):</label>
+          <input type="range" min="1" max="10" id="rating3" value="5">
 
-      <button type="submit" id="submitBtn">Pateikti</button>
+          <button type="submit" id="submitBtn">Pateikti</button>
+        </form>
+        
+        <section id="memory-game" class="memory-section">
+          <h2>Mano žaidimas</h2>
 
-    </form>
-   <section id="memory-game" class="memory-section">
-  <h2>Mano žaidimas</h2>
+          <!-- Lygio pasirinkimas -->
+          <div class="level-buttons">
+            <button id="levelEasy" class="level-btn active">Lengvas (4x3)</button>
+            <button id="levelHard" class="level-btn">Sunkus (6x4)</button>
+          </div>
 
-  <!-- Lygio pasirinkimas -->
-  <div class="level-buttons">
-    <button id="levelEasy" class="level-btn active">Lengvas (4x3)</button>
-    <button id="levelHard" class="level-btn">Sunkus (6x4)</button>
-  </div>
+          <!-- Mygtukai -->
+          <div class="game-buttons">
+            <button id="startGame" class="btn">Start</button>
+            <button id="resetGame" class="btn">Atnaujinti</button>
+          </div>
 
-  <!-- Mygtukai -->
-  <div class="game-buttons">
-    <button id="startGame" class="btn">Start</button>
-    <button id="resetGame" class="btn">Atnaujinti</button>
-  </div>
+          <!-- Statistika -->
+          <div class="stats">
+            <p>Ėjimai: <span id="moves">0</span></p>
+            <p>Sutapimai: <span id="matches">0</span></p>
+            <p>Laikas: <span id="time">0:00</span></p>
+          </div>
 
-  <!-- Statistika -->
-  <div class="stats">
-    <p>Ėjimai: <span id="moves">0</span></p>
-    <p>Sutapimai: <span id="matches">0</span></p>
-    <p>Laikas: <span id="time">0:00</span></p>
-  </div>
+          <!-- Geriausi rezultatai -->
+          <div class="stats-best">
+            <p>Geriausias (Lengvas): <span id="best-easy">-</span></p>
+            <p>Geriausias (Sunkus): <span id="best-hard">-</span></p>
+          </div>
 
-  <!-- Geriausi rezultatai -->
-  <div class="stats-best">
-    <p>Geriausias (Lengvas): <span id="best-easy">-</span></p>
-    <p>Geriausias (Sunkus): <span id="best-hard">-</span></p>
-  </div>
+          <!-- Žaidimo lenta -->
+          <div id="gameBoard" class="board"></div>
 
-  <!-- Žaidimo lenta -->
-  <div id="gameBoard" class="board"></div>
+          <!-- Laimėjimo pranešimas -->
+          <div id="winMessage" class="win hidden">🎉 Laimėjote! 🎉</div>
+        </section>
+      </div>
 
-  <!-- Laimėjimo pranešimas -->
-  <div id="winMessage" class="win hidden">🎉 Laimėjote! 🎉</div>
-</section>
-
-</section><!-- /Contact Section -->
+    </section><!-- /Contact Section -->
 
   </main>
 
