@@ -914,7 +914,7 @@
   </tbody>
 </table>
 
-    </section><!-- /Testimonials Section -->
+  </section><!-- /Testimonials Section -->
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
@@ -956,7 +956,34 @@
       <button type="submit" id="submitBtn">Pateikti</button>
 
     </form>
+    <section id="memory-game" class="memory-section">
+  <h2>Mano žaidimas</h2>
 
+  <!-- Sunkumo pasirinkimas -->
+  <label for="difficulty">Pasirinkite sudėtingumą:</label>
+  <select id="difficulty">
+    <option value="easy">Lengvas (4x3)</option>
+    <option value="hard">Sunkus (6x4)</option>
+  </select>
+
+  <!-- Mygtukai -->
+  <div class="game-buttons">
+    <button id="startGame">Start</button>
+    <button id="resetGame">Atnaujinti</button>
+  </div>
+
+  <!-- Statistika -->
+  <div class="stats">
+    <p>Ėjimai: <span id="moves">0</span></p>
+    <p>Sutapimai: <span id="matches">0</span></p>
+  </div>
+
+  <!-- Žaidimo lenta -->
+  <div id="gameBoard" class="board"></div>
+
+  <!-- Laimėjimo pranešimas -->
+  <div id="winMessage" class="win hidden">🎉 Laimėjote! 🎉</div>
+</section>
     <!-- ČIA BUS ATVAIZDUOTI DUOMENYS -->
     <div id="formResult" class="result-box"></div>
 
@@ -1010,6 +1037,6 @@
   loader.style.opacity = "0";
   setTimeout(() => loader.style.display = "none", 500);
   });
-  </script> 
+  </script>
  </body>
 </html>

@@ -162,3 +162,97 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+// --- Duomenų rinkinys (paveiksliukai arba emoji) ---
+const icons = [
+  "🍎","🍌","🍇","🍒","🥝","🍋",
+  "🍓","🍑","🍍","🥭","🍈","🥥"
+];
+
+
+let board = [];
+let flippedCards = [];
+let matchedCount = 0;
+let moves = 0;
+
+// HTML elementai
+const boardEl = document.getElementById("gameBoard");
+const movesEl = document.getElementById("moves");
+const matchesEl = document.getElementById("matches");
+const winMessage = document.getElementById("winMessage");
+const difficulty = document.getElementById("difficulty");
+
+// Mygtukai
+document.getElementById("startGame").addEventListener("click", startGame);
+document.getElementById("resetGame").addEventListener("click", startGame);
+
+// Funkcija: pradėti / perkurti žaidimą
+function startGame() {
+  winMessage.classList.add("hidden");
+  moves = 0;
+  matchedCount = 0;
+  flippedCards = [];
+  movesEl.textContent = 0;
+  matchesEl.textContent = 0;
+
+  let pairs = difficulty.value === "easy" ? 6 : 12;
+  let grid = difficulty.value === "easy" ? "repeat(4, 1fr)" : "repeat(6, 1fr)";
+
+  boardEl.style.gridTemplateColumns = grid;
+
+  let selectedIcons = icons.slice(0, pairs);
+  board = [...selectedIcons, ...selectedIcons]
+    .sort(() => Math.random() - 0.5);
+
+  boardEl.innerHTML = "";
+
+  board.forEach((icon, index) => {
+    let card = document.createElement("div");
+    card.classList.add("card");
+    card.dataset.index = index;
+    card.dataset.value = icon;
+    card.textContent = icon;
+
+    card.addEventListener("click", flipCard);
+    boardEl.appendChild(card);
+  });
+}
+
+// Funkcija: apversti kortelę
+function flipCard() {
+  if (flippedCards.length === 2) return;
+
+  let card = this;
+  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+
+  card.classList.add("flipped");
+  flippedCards.push(card);
+
+  if (flippedCards.length === 2) {
+    moves++;
+    movesEl.textContent = moves;
+
+    setTimeout(checkMatch, 600);
+  }
+}
+
+// Funkcija: tikrinti ar kortelės sutampa
+function checkMatch() {
+  let [c1, c2] = flippedCards;
+
+  if (c1.dataset.value === c2.dataset.value) {
+    c1.classList.add("matched");
+    c2.classList.add("matched");
+    matchedCount++;
+    matchesEl.textContent = matchedCount;
+  } else {
+    c1.classList.remove("flipped");
+    c2.classList.remove("flipped");
+  }
+
+  flippedCards = [];
+
+  if (matchedCount === board.length / 2) {
+    winMessage.classList.remove("hidden");
+  }
+}
