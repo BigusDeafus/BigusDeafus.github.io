@@ -375,35 +375,146 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // Real-time validation for inputs
-    const formInputs = document.querySelectorAll('#contactForm input');
-    formInputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            if (this.id === 'email' && this.value) {
-                if (!validateEmail(this.value)) {
-                    showError(this, "Įveskite teisingą el. pašto adresą");
-                } else {
-                    showValid(this);
-                }
+    // ----------------------
+// ⚡ Pagalbinės funkcijos
+// ----------------------
+
+// Klaidos rodymas
+function showError(input, message) {
+    input.style.border = "2px solid red";
+
+    let errorMsg = input.nextElementSibling;
+    if (!errorMsg || !errorMsg.classList.contains("error-msg")) {
+        errorMsg = document.createElement("div");
+        errorMsg.classList.add("error-msg");
+        errorMsg.style.color = "red";
+        errorMsg.style.fontSize = "14px";
+        errorMsg.style.marginTop = "4px";
+        input.insertAdjacentElement("afterend", errorMsg);
+    }
+    errorMsg.textContent = message;
+
+    validateForm();
+}
+
+// Teisingo įvedimo rodymas
+function showValid(input) {
+    input.style.border = "2px solid #4CAF50";
+
+    const errorMsg = input.nextElementSibling;
+    if (errorMsg && errorMsg.classList.contains("error-msg")) {
+        errorMsg.remove();
+    }
+
+    validateForm();
+}
+
+// El. pašto tikrinimas
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Vardo/pavardės tikrinimas — tik raidės
+function validateName(text) {
+    return /^[A-Za-zĄČĘĖĮŠŲŪŽąčęėįšųūž\s-]+$/.test(text);
+}
+
+// ----------------------
+// 📞 TELEFONO FORMATAVIMAS REALIU LAIKU
+// ----------------------
+
+const phoneInput = document.getElementById("phone");
+
+phoneInput.addEventListener("input", () => {
+    let value = phoneInput.value.replace(/\D/g, ""); // paliekami tik skaičiai
+
+    // Įdedame +370 automatiškai
+    if (!value.startsWith("370")) {
+        value = "370" + value;
+    }
+
+    // Maksimalus ilgis: +370 6xx xxxx → realiai 11 skaičių
+    value = value.substring(0, 11);
+
+    // Formatuojame į +370 6xx xxxx
+    let formatted =
+        "+370 " +
+        value.substring(3, 4) +
+        value.substring(4, 7).replace(/^(.{0,3})/, "$1") +
+        " " +
+        value.substring(7, 11);
+
+    phoneInput.value = formatted.trim();
+
+    // Validacija
+    if (value.length === 11 && value[3] === "6") {
+        showValid(phoneInput);
+    } else {
+        showError(phoneInput, "Telefono formatas turi būti: +370 6xx xxxx");
+    }
+});
+
+// Papildomas telefono tikrinimas blur metu
+function validatePhone(value) {
+    return /^\+370 6\d{2} \d{4}$/.test(value);
+}
+
+// ----------------------
+// 🟥🟩 Realiu laiku tikrinami visi laukai
+// ----------------------
+
+const formInputs = document.querySelectorAll('#contactForm input:not([type="range"])');
+
+formInputs.forEach(input => {
+    input.addEventListener("blur", function () {
+
+        // Vardas / Pavardė → tik raidės
+        if (this.id === "firstName" || this.id === "lastName") {
+            if (!validateName(this.value)) {
+                showError(this, "Vardas ir pavardė gali būti sudaryti tik iš raidžių");
+            } else {
+                showValid(this);
             }
-            
-            if (this.id === 'phone' && this.value) {
-                if (!validatePhone(this.value)) {
-                    showError(this, "Įveskite teisingą telefono numerį");
-                } else {
-                    showValid(this);
-                }
+        }
+
+        // El. paštas
+        if (this.id === "email") {
+            if (!validateEmail(this.value)) {
+                showError(this, "Neteisingas el. pašto formatas");
+            } else {
+                showValid(this);
             }
-            
-            if ((this.id === 'firstName' || this.id === 'lastName') && this.value) {
-                if (this.value.length < 2) {
-                    showError(this, "Turi būti bent 2 simboliai");
-                } else {
-                    showValid(this);
-                }
+        }
+
+        // Adresas → visada leidžiamas, nebent tusčias
+        if (this.id === "address") {
+            if (this.value.trim() === "") {
+                showError(this, "Adreso laukelis negali būti tuščias");
+            } else {
+                showValid(this);
             }
-        });
+        }
     });
+});
+
+// ----------------------
+// 🔒 Submit mygtuko aktyvinimas/deaktyvinimas
+// ----------------------
+
+function validateForm() {
+    const submitBtn = document.getElementById("submitBtn");
+    let valid = true;
+
+    formInputs.forEach(input => {
+        if (input.style.border.includes("red") || input.value.trim() === "") {
+            valid = false;
+        }
+    });
+
+    submitBtn.disabled = !valid;
+}
+
+validateForm();
     
     // Rating sliders value display
     const ratings = ['rating1', 'rating2', 'rating3'];
